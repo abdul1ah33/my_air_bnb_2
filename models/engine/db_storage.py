@@ -16,7 +16,7 @@ from models.review import Review
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-class DBstorage:
+class DBStorage:
     __engine = None
     __session = None
 
@@ -28,29 +28,34 @@ class DBstorage:
         database = getenv('HBNB_MYSQL_DB')
 
         self.__engine = create_engine(
-            'mysql+mysqldb://{}:{}@{}/{}'.format(user, password, host, database),
+            'mysql+mysqldb://{}:{}@{}/{}'.format(
+                user, password, host, database),
             pool_pre_ping=True)
         
         if getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """Queries the current database session for all objects of a given class or all classes."""
+        """Queries the current database session for 
+        all objects of a given class or all classes.
+        """
         objects_dict = {}
         if cls:
+            if isinstance(cls, str):
+                cls = eval(cls)
             query = self.__session.query(cls).all()
             for obj in query:
                 key = "{}.{}".format(obj.__class__.__name__, obj.id)
-                objects_dict[key] =  obj
+                objects_dict[key] = obj
         else:
             classes = [State, City, User, Amenity, Place, Review]
             for cls in classes:
                 query = self.__session.query(cls).all()
                 for obj in query:
                     key = "{}.{}".format(obj.__class__.__name__, obj.id)
-                    objects_dict[key] =  obj
+                    objects_dict[key] = obj
         return objects_dict
-    
+
     def new(self, obj):
         """Adds the object to the current database session."""
         self.__session.add(obj)
