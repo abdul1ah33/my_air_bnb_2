@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Defines the User class victor. """
 from models.base_model import BaseModel
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Defines the City class."""
 import models
 from models.base_model import BaseModel, Base
