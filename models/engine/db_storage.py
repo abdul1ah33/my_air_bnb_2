@@ -17,7 +17,7 @@ from models.review import Review
 class DBStorage:
     __engine = None
     __session = None
-    classes = [State, City, User, Amenity, Place, Review]  # List of all model classes
+    classes = {"State": State, "City": City, "User": User, "Amenity": Amenity, "Place": Place, "Review": Review}
 
     def __init__(self):
         """Initializes the DBStorage instance."""
@@ -44,13 +44,14 @@ class DBStorage:
         try:
             if cls:
                 if isinstance(cls, str):
-                    cls = eval(cls)
-                query = self.__session.query(cls).all()
-                for obj in query:
-                    key = "{}.{}".format(obj.__class__.__name__, obj.id)
-                    new_dict[key] = obj
+                    cls = self.classes.get(cls)
+                if cls is not None:
+                    query = self.__session.query(cls).all()
+                    for obj in query:
+                        key = "{}.{}".format(obj.__class__.__name__, obj.id)
+                        new_dict[key] = obj
             else:
-                for clss in self.classes:
+                for clss in self.classes.values():
                     query = self.__session.query(clss).all()
                     for obj in query:
                         key = "{}.{}".format(obj.__class__.__name__, obj.id)
@@ -89,5 +90,7 @@ class DBStorage:
     def reload(self):
         """Reloads data from the database."""
         Base.metadata.create_all(self.__engine)
-
+        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sess_factory)
+        self.__session = Session
 
