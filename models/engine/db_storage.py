@@ -6,6 +6,7 @@ Contains the class DBStorage
 from os import getenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.exc import ArgumentError
 from models.base_model import BaseModel, Base
 from models.user import User
 from models.state import State
@@ -90,7 +91,6 @@ class DBStorage:
     def reload(self):
         """Reloads data from the database."""
         Base.metadata.create_all(self.__engine)
-        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(sess_factory)
-        self.__session = Session
+        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(session_factory)
 

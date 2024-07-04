@@ -1,18 +1,29 @@
-#!/usr/bin/env python3
-"""Defines the User class victor. """
-from models.base_model import BaseModel
+#!/usr/bin/python3
+""" holds class User"""
+import models
+from models.base_model import BaseModel, Base
+from os import getenv
+import sqlalchemy
+from sqlalchemy import Column, String
+from sqlalchemy.orm import relationship
 
-class User(BaseModel):
-    """RepresentaUser.
 
-    Attributes:
-        email (str): Temail of the user.
-        password (str): password of the user.
-        first_name (str): first name of the user.
-        last_name (str): last name of the user.
-    """
+class User(BaseModel, Base):
+    """Representation of a user """
+    if models.storage_t == 'db':
+        __tablename__ = 'users'
+        email = Column(String(128), nullable=False)
+        password = Column(String(128), nullable=False)
+        first_name = Column(String(128), nullable=True)
+        last_name = Column(String(128), nullable=True)
+        places = relationship("Place", backref="user")
+        reviews = relationship("Review", backref="user")
+    else:
+        email = ""
+        password = ""
+        first_name = ""
+        last_name = ""
 
-    email = ""
-    password = ""
-    first_name = ""
-    last_name = ""
+    def __init__(self, *args, **kwargs):
+        """initializes user"""
+        super().__init__(*args, **kwargs)
