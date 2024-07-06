@@ -21,6 +21,11 @@ class BaseModel:
             *args (any): Unused.
             **kwargs (dict): Key/value pairs of attributes.
         """
+        if kwargs:
+            for k, v in kwargs.items():
+                if k == "__class__":
+                    continue
+                self.__dict__[k] = v
         timef = "%Y-%m-%dT%H:%M:%S.%f"  # Updated format to include microseconds
         if kwargs.get("id", None) is None:
             self.id = str(uuid4())
@@ -36,11 +41,6 @@ class BaseModel:
             self.updated_at = datetime.strptime(kwargs["updated_at"], timef)
         else:
             self.updated_at = datetime.now()
-        if kwargs:
-            for k, v in kwargs.items():
-                if k == "__class__":
-                    continue
-                self.__dict__[k] = v
 
     def __str__(self):
         """Return the print/str representation of the BaseModel instance."""
